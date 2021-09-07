@@ -31,7 +31,7 @@ def init_db(app):
     lg.warning('Database initialized!')
 
 
-if __name__ == "__main__":
-    app = create_app()
-    init_db(app)
-    app.run(debug=True)
+#if __name__ == "__main__":
+app = create_app()
+init_db(app)
+app.run(debug=True)
