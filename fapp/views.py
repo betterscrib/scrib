@@ -35,7 +35,7 @@ def load_user(user_id):
 
 @main_bp.route('/')
 def index():
-    return render_template('index.html')
+    return redirect(url_for("main.login"))
 
 @main_bp.route('/dashboard/')
 @login_required 
