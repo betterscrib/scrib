@@ -4,6 +4,7 @@ from flask_bootstrap import Bootstrap
 from flask import Flask
 import logging as lg
 
+
 def create_app():
     app = Flask(__name__)
     Bootstrap(app)
