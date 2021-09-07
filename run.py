@@ -3,6 +3,7 @@
 from flask_bootstrap import Bootstrap
 from flask import Flask
 import logging as lg
+import os
 
 
 
@@ -34,4 +35,4 @@ def init_db(app):
 #if __name__ == "__main__":
 app = create_app()
 init_db(app)
-app.run(debug=True)
+app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
