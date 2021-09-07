@@ -5,8 +5,6 @@ from flask import Flask
 import logging as lg
 import os
 
-
-
 def create_app():
     app = Flask(__name__)
     Bootstrap(app)
@@ -32,7 +30,7 @@ def init_db(app):
     lg.warning('Database initialized!')
 
 
-#if __name__ == "__main__":
 app = create_app()
 init_db(app)
-app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
