@@ -10,6 +10,7 @@ def create_app():
     Bootstrap(app)
     app.config.from_object('config')
 
+    db = init_unix_connection_engine
     from fapp.models import db
     db.init_app(app)
 
@@ -28,6 +29,7 @@ def init_db(app):
         db.create_all()
         db.session.commit()
     lg.warning('Database initialized!')
+
 
 
 app = create_app()
