@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for 
+from flask import Blueprint, render_template, redirect, url_for, request
 from flask_bootstrap import Bootstrap
 from flask_login import login_user, login_required, logout_user, current_user
 
@@ -10,6 +10,7 @@ from wtforms.validators import DataRequired, Email, Length, EqualTo
 from .models import db, login_manager, User
 
 from werkzeug.security import generate_password_hash, check_password_hash
+from google.cloud import storage
 
 class LoginForm(Form):
     email = EmailField('Email', validators=[DataRequired(), Email(message = 'Invalid Email'), Length(min=4, max=50)], render_kw={"placeholder": "Enter email address"})
@@ -41,6 +42,11 @@ def index():
 @login_required 
 def dashboard():
     return render_template('dashboard.html', user=current_user)
+
+@main_bp.route('/addcall/')
+@login_required
+def addcall():
+    return render_template('addcall.html', user=current_user)
 
 @main_bp.route('/login/', methods=['GET', 'POST'])
 def login():
@@ -80,3 +86,27 @@ def logout():
     logout_user()
     return redirect(url_for('main.login'))
 
+@main_bp.route('/upload', methods=['POST'])
+def upload():
+    """Process the uploaded file and upload it to Google Cloud Storage."""
+    uploaded_file = request.files.get('file')
+
+    if not uploaded_file:
+        return 'No file uploaded.', 400
+
+    # Create a Cloud Storage client.
+    gcs = storage.Client()
+
+    # Get the bucket that the file will be uploaded to.
+    bucket = gcs.get_bucket("scribtranscripts")
+
+    # Create a new blob and upload the file's content.
+    blob = bucket.blob(uploaded_file.filename)
+
+    blob.upload_from_string(
+        uploaded_file.read(),
+        content_type=uploaded_file.content_type
+    )
+
+    # The public URL can be used to directly access the uploaded file via HTTP.
+    return blob.public_url
