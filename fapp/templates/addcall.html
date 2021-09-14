@@ -537,7 +537,7 @@
                                                 <input type="file" id ="files" name="file" style="display:none"  onchange="this.form.submit()">
                                         </form>
 
-                                        {% if request.args.get('uploaded') %}
+                                        {% if uploaded %}
                                             <span class="badge badge-green">Green</span>
                                         {% endif %}
 
