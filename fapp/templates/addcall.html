@@ -535,11 +535,14 @@
                                         <form method="POST" action="/upload" enctype="multipart/form-data">
                                                 <label for="files" class="btn btn-primary">Upload new recording</label>
                                                 <input type="file" id ="files" name="file" style="display:none"  onchange="this.form.submit()">
+
+                                            {% if uploaded %}
+                                                <span class="badge bg-green">Uploaded!</span>
+                                            {% endif %}
+
                                         </form>
 
-                                        {% if uploaded %}
-                                            <span class="badge badge-green">Green</span>
-                                        {% endif %}
+
 
                                     </div>
                                 </div>
