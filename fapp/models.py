@@ -17,7 +17,7 @@ class User(UserMixin, db.Model):
 
 class Recording(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    file_path = db.Column(db.String(256), unique=True)
+    file_path = db.Column(db.String(256))
     user_id = db.Column(db.Integer)
     file_size = db.Column(db.Integer)
     file_format = db.Column(db.String(50))
