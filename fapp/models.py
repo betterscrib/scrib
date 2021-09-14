@@ -13,3 +13,12 @@ class User(UserMixin, db.Model):
     last_name = db.Column(db.String(50))
     email = db.Column(db.String(50), unique=True)
     password = db.Column(db.String(256))
+
+
+class Recording(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    file_path = db.Column(db.String(50), unique=True)
+    user_id = db.Column(db.Integer)
+    file_size = db.Column(db.Integer)
+    file_format = db.Column(db.String(50))
+

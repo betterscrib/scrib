@@ -7,7 +7,7 @@ from wtforms import StringField, PasswordField, BooleanField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Email, Length, EqualTo 
 
-from .models import db, login_manager, User
+from .models import db, login_manager, User, Recording
 
 from werkzeug.security import generate_password_hash, check_password_hash
 from google.cloud import storage
@@ -46,6 +46,7 @@ def dashboard():
 @main_bp.route('/addcall/')
 @login_required
 def addcall():
+    uploaded = request.args.get('uploaded')
     return render_template('addcall.html', user=current_user)
 
 @main_bp.route('/login/', methods=['GET', 'POST'])
@@ -108,5 +109,13 @@ def upload():
         content_type=uploaded_file.content_type
     )
 
+    new_recording = Recording(file_path=blob.public_url,
+                    user_id=current_user.id,
+                    file_format=uploaded_file.content_type,
+                    file_size=blob.size)
+
+    db.session.add(new_recording)
+    db.session.commit()
+
     # The public URL can be used to directly access the uploaded file via HTTP.
-    return blob.public_url
+    return render_template('addcall.html', user=current_user, uploaded=True)

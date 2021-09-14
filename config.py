@@ -16,4 +16,7 @@ SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:CtqwPLt3m2lh3Hnh@/scrib?unix_soc
 # >>> import random, string
 # >>> "".join([random.choice(string.printable) for _ in range(24)])
 SECRET_KEY = '\\R8a"hn\nryK8\x0c<]_J1|zZ)}b'
-
+gcloud projects get-iam-policy crucial-media-325221 \
+--flatten="bindings[].members" \
+--format='table(bindings.role)' \
+--filter="bindings.members:betterscrib@crucial-media-325221.iam.gserviceaccount.com"
