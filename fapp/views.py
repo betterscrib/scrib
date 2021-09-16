@@ -12,6 +12,10 @@ from .models import db, login_manager, User, Recording
 from werkzeug.security import generate_password_hash, check_password_hash
 from google.cloud import storage
 
+import librosa
+import io
+from pydub import AudioSegment
+
 
 class LoginForm(Form):
     email = EmailField('Email', validators=[DataRequired(), Email(message = 'Invalid Email'), Length(min=4, max=50)], render_kw={"placeholder": "Enter email address"})
@@ -56,6 +60,10 @@ def addcall():
     uploaded = request.args.get('uploaded')
     return render_template('addcall.html', user=current_user, error=error, uploaded=uploaded)
 
+# @main_bp.route('/recordings/')
+# @login_required
+# def addcall():
+#     return render_template('addcall.html', user=current_user, error=error, uploaded=uploaded)
 
 @main_bp.route('/login/', methods=['GET', 'POST'])
 def login():
@@ -124,10 +132,14 @@ def upload():
         content_type=uploaded_file.content_type
     )
 
+    audioseg = AudioSegment.from_file(io.BytesIO(uploaded_file_read), format="mp3")
+    duration = audioseg.duration_seconds
+
     new_recording = Recording(file_path=blob.public_url,
                               user_id=current_user.id,
                               file_format=uploaded_file.content_type,
-                              file_size=blob.size)
+                              file_size=blob.size,
+                              duration=duration)
 
     db.session.add(new_recording)
     db.session.commit()

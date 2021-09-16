@@ -21,4 +21,5 @@ class Recording(db.Model):
     user_id = db.Column(db.Integer)
     file_size = db.Column(db.Integer)
     file_format = db.Column(db.String(50))
+    duration = db.Column(db.Float)
 
