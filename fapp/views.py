@@ -46,8 +46,9 @@ def dashboard():
 @main_bp.route('/addcall/')
 @login_required
 def addcall():
+    error = request.args.get('error')
     uploaded = request.args.get('uploaded')
-    return render_template('addcall.html', user=current_user)
+    return render_template('addcall.html', user=current_user, error=error, uploaded=uploaded)
 
 @main_bp.route('/login/', methods=['GET', 'POST'])
 def login():
@@ -95,6 +96,10 @@ def upload():
     if not uploaded_file:
         return 'No file uploaded.', 400
 
+    if "audio" not in uploaded_file.content_type:
+        return redirect(url_for('main.addcall', error="format"))
+
+
     # Create a Cloud Storage client.
     gcs = storage.Client()
 
@@ -103,11 +108,14 @@ def upload():
 
     # Create a new blob and upload the file's content.
     blob = bucket.blob(uploaded_file.filename)
+    if blob.size > 10000:
+        return redirect(url_for('main.addcall', error="size"))
 
     blob.upload_from_string(
         uploaded_file.read(),
         content_type=uploaded_file.content_type
     )
+
 
     new_recording = Recording(file_path=blob.public_url,
                     user_id=current_user.id,
@@ -118,4 +126,4 @@ def upload():
     db.session.commit()
 
     # The public URL can be used to directly access the uploaded file via HTTP.
-    return render_template('addcall.html', user=current_user, uploaded=True)
+    return redirect(url_for('main.addcall', uploaded=True))

@@ -508,6 +508,7 @@
                                             Add Recording
                                         </h1>
                                     </div>
+
                                     <div class="col-12 col-xl-auto mb-3">
                                         <a class="btn btn-sm btn-light text-primary" href="user-management-list.html">
                                             <i class="me-1" data-feather="arrow-left"></i>
@@ -519,9 +520,31 @@
                         </div>
                     </header>
                     <!-- Main page content-->
+
                     <div class="container-xl px-4 mt-4">
                         <div class="row">
                             <div class="col-xl-12">
+                                {% if uploaded %}
+                                    <div class="alert alert-success alert-dismissible fade show animated--fade-in-up" role="alert">
+                                        Recording was successfully uploaded!
+                                        <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                {% endif %}
+
+                                {% if error == "format" %}
+                                    <div class="alert alert-danger alert-dismissible fade show animated--fade-in-up" role="alert">
+                                        The file is not an audio file.
+                                        <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                {% endif %}
+
+                                {% if error == "size" %}
+                                    <div class="alert alert-danger alert-dismissible fade show animated--fade-in-up" role="alert">
+                                        File is too large.
+                                        <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                {% endif %}
+
                                 <!-- Profile picture card-->
                                 <div class="card mb-4 mb-xl-0">
                                     <div class="card-header">New Recording</div>
@@ -533,15 +556,10 @@
                                         <!-- Profile picture upload button-->
 
                                         <form method="POST" action="/upload" enctype="multipart/form-data">
-                                                <label for="files" class="btn btn-primary">Upload new recording</label>
-                                                <input type="file" id ="files" name="file" style="display:none"  onchange="this.form.submit()">
-
-                                            {% if uploaded %}
-                                                <span class="badge bg-green">Uploaded!</span>
-                                            {% endif %}
-
+                                            <label for="files" class="btn btn-primary">Upload new recording
+                                                <input type="file" id ="files" name="file" style="display:none" onchange="this.form.submit()">
+                                            </label>
                                         </form>
-
 
 
                                     </div>
