@@ -102,6 +102,7 @@ def upload():
     if len(uploaded_file.read()) > 10000:
         return redirect(url_for('main.addcall', error="size"))
 
+
     # Create a Cloud Storage client.
     gcs = storage.Client()
 
