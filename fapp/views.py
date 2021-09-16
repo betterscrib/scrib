@@ -99,6 +99,8 @@ def upload():
     if "audio" not in uploaded_file.content_type:
         return redirect(url_for('main.addcall', error="format"))
 
+    if len(uploaded_file.read()) > 10000:
+        return redirect(url_for('main.addcall', error="size"))
 
     # Create a Cloud Storage client.
     gcs = storage.Client()
@@ -108,8 +110,7 @@ def upload():
 
     # Create a new blob and upload the file's content.
     blob = bucket.blob(uploaded_file.filename)
-    # if blob.size > 10000:
-    #     return redirect(url_for('main.addcall', error="size"))
+
 
     blob.upload_from_string(
         uploaded_file.read(),
