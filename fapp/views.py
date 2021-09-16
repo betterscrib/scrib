@@ -108,8 +108,8 @@ def upload():
 
     # Create a new blob and upload the file's content.
     blob = bucket.blob(uploaded_file.filename)
-    if blob.size > 10000:
-        return redirect(url_for('main.addcall', error="size"))
+    # if blob.size > 10000:
+    #     return redirect(url_for('main.addcall', error="size"))
 
     blob.upload_from_string(
         uploaded_file.read(),
