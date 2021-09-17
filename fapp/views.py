@@ -52,9 +52,9 @@ def index():
 @login_required 
 def dashboard():
     print(current_user.id)
-    recs = Recording.query.filter_by(user_id=current_user.id)
-    print(recs.first())
-    return render_template('dashboard.html', user=current_user)
+    recs = Recording.query.filter_by(Recording.user_id == current_user.id).all()
+
+    return render_template('dashboard.html', user=current_user, recs=recs)
 
 
 @main_bp.route('/addcall/')

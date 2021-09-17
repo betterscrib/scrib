@@ -1593,6 +1593,39 @@
                                 </table>
                             </div>
                         </div>
+
+                        <div class="card mb-4">
+                            <div class="card-header">Recordings</div>
+                            <div class="card-body">
+                                <table id="datatablesSimple">
+                                    <thead>
+                                        <tr>
+                                            <th>Path</th>
+                                            <th>Size</th>
+                                            <th>Duration</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th>File Path</th>
+                                            <th>Size</th>
+                                            <th>Duration</th>
+
+                                        </tr>
+                                    </tfoot>
+                                    <tbody>
+                                        {% for rec in recs %}
+                                            <tr>
+                                                <td>{{ recs.file_path }}</td>
+                                                <td>{{ recs.file_size }}</td>
+                                                <td>{{ recs.duration }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </main>
                 <footer class="footer-admin mt-auto footer-light">
