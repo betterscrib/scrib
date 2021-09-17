@@ -15,6 +15,7 @@ from google.cloud import storage
 import librosa
 import io
 from pydub import AudioSegment
+import logging as lg
 
 
 class LoginForm(Form):
@@ -50,6 +51,9 @@ def index():
 @main_bp.route('/dashboard/')
 @login_required 
 def dashboard():
+    print(current_user.id)
+    recs = Recording.query.filter_by(user_id=current_user.id)
+    print(recs.first())
     return render_template('dashboard.html', user=current_user)
 
 
