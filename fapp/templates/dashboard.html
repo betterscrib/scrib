@@ -1608,7 +1608,7 @@
                                     </thead>
                                     <tfoot>
                                         <tr>
-                                            <th>File Path</th>
+                                            <th>Path</th>
                                             <th>Size</th>
                                             <th>Duration</th>
 
@@ -1617,9 +1617,9 @@
                                     <tbody>
                                         {% for rec in recs %}
                                             <tr>
-                                                <td>{{ recs.file_path }}</td>
-                                                <td>{{ recs.file_size }}</td>
-                                                <td>{{ recs.duration }}</td>
+                                                <td>{{ rec.file_path }}</td>
+                                                <td>{{ rec.file_size }}</td>
+                                                <td>{{ rec.duration }}</td>
                                             </tr>
                                         {% endfor %}
                                     </tbody>
