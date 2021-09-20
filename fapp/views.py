@@ -51,7 +51,6 @@ def index():
 @main_bp.route('/dashboard/')
 @login_required 
 def dashboard():
-    print(current_user.id)
     recs = Recording.query.filter_by(user_id=current_user.id).all()
     return render_template('dashboard.html', user=current_user, recs=recs)
 
@@ -106,6 +105,18 @@ def logout():
     return redirect(url_for('main.login'))
 
 
+@main_bp.route('/integrations/aircall-redirect/')
+@login_required
+def aircall_redirect():
+    return redirect(url_for("main.dashboard"))
+
+
+@main_bp.route('/integrations/aircall-install/')
+@login_required
+def aircall_install():
+    return redirect(url_for("main.dashboard"))
+
+
 @main_bp.route('/upload', methods=['POST'])
 def upload():
     """Process the uploaded file and upload it to Google Cloud Storage."""
@@ -149,3 +160,5 @@ def upload():
 
     # The public URL can be used to directly access the uploaded file via HTTP.
     return redirect(url_for('main.addcall', uploaded=True))
+
+
