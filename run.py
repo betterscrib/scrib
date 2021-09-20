@@ -34,4 +34,4 @@ def init_db(app):
 app = create_app()
 init_db(app)
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
+    app.run()

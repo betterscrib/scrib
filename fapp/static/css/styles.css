@@ -11,7 +11,7 @@
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
 :root {
-  --bs-blue: #0061f2;
+  --bs-blue: #003ea7;
   --bs-indigo: #5800e8;
   --bs-purple: #6900c7;
   --bs-pink: #e30059;
@@ -33,7 +33,7 @@
   --bs-gray-700: #4a515b;
   --bs-gray-800: #363d47;
   --bs-gray-900: #212832;
-  --bs-primary: #0061f2;
+  --bs-primary: #003ea7;
   --bs-secondary: #6900c7;
   --bs-success: #00ac69;
   --bs-info: #00cfd5;
@@ -5785,6 +5785,10 @@ textarea.form-control-lg {
 }
 .navbar-brand:hover, .navbar-brand:focus {
   text-decoration: none;
+}
+
+.logo{
+ background-size: 200px 100px;
 }
 
 .navbar-nav {
@@ -19885,7 +19889,7 @@ body {
   font-weight: bold;
 }
 .topnav .navbar-brand img {
-  height: 0.8rem;
+  height: 100%;
 }
 @media (min-width: 992px) {
   .topnav .navbar-brand {

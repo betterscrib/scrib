@@ -53,6 +53,10 @@ def dashboard():
     return render_template('dashboard.html', user=current_user)
 
 
+@main_bp.route('/home/')
+def home():
+    return render_template('home.html')
+
 @main_bp.route('/addcall/')
 @login_required
 def addcall():
@@ -64,6 +68,7 @@ def addcall():
 # @login_required
 # def addcall():
 #     return render_template('addcall.html', user=current_user, error=error, uploaded=uploaded)
+
 
 @main_bp.route('/login/', methods=['GET', 'POST'])
 def login():
