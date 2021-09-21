@@ -121,6 +121,7 @@ def aircall_redirect():
               "redirect_uri": redirect_uri,
               "grant_type": "authorization_code"}
 
+
     x = requests.post(url, data=myobj)
     print(x)
     return redirect(url_for("main.dashboard"))
