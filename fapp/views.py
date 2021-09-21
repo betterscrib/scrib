@@ -105,9 +105,11 @@ def logout():
     return redirect(url_for('main.login'))
 
 
-@main_bp.route('/integrations/aircall-redirect/')
+@main_bp.route('/integrations/aircall-redirect/', methods=['GET'])
 @login_required
 def aircall_redirect():
+    aircall_code = request.args.get('code')
+    print(aircall_code)
     return redirect(url_for("main.dashboard"))
 
 
