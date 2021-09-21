@@ -124,9 +124,9 @@ def aircall_redirect():
 
     x = requests.post(url, data=myobj)
 
-    token = x.access_token
+    token = x.content
     print(token)
-    return redirect(url_for("main.aircall_install", token=token))
+    return redirect(url_for("main.aircall_install"))
 
 
 @main_bp.route('/integrations/aircall-install/', methods=['GET', 'POST'])
