@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Add User - SB Admin Pro</title>
+        <title>Blank Starter - SB Admin Pro</title>
         <link href="{{ url_for('.static', filename='css/styles.css') }}" rel="stylesheet" />
         <link href="{{ url_for('.static', filename='assets/img/favicon.png') }}" rel="icon" type="image/x-icon"/>
         <script data-search-pseudo-elements defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
@@ -498,74 +498,31 @@
             </div>
             <div id="layoutSidenav_content">
                 <main>
-                    <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
+                    <header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-10">
                         <div class="container-xl px-4">
-                            <div class="page-header-content">
-                                <div class="row align-items-center justify-content-between pt-3">
-                                    <div class="col-auto mb-3">
+                            <div class="page-header-content pt-4">
+                                <div class="row align-items-center justify-content-between">
+                                    <div class="col-auto mt-4">
                                         <h1 class="page-header-title">
-                                            <div class="page-header-icon"><i data-feather="user-plus"></i></div>
-                                            Add Recording
+                                            <div class="page-header-icon"><i data-feather="file"></i></div>
+                                             Integrations
                                         </h1>
+                                        <div class="page-header-subtitle">Aircall</div>
                                     </div>
-
-                                    <div class="col-12 col-xl-auto mb-3">
-                                        <a class="btn btn-sm btn-light text-primary" href="user-management-list.html">
-                                            <i class="me-1" data-feather="arrow-left"></i>
-                                            Back to Recordings List
-                                        </a>
-                                    </div>
+{#                                    <div class="col-12 col-xl-auto mt-4">Optional page header content</div>#}
                                 </div>
                             </div>
                         </div>
                     </header>
                     <!-- Main page content-->
-
-                    <div class="container-xl px-4 mt-4">
-                        <div class="row">
-                            <div class="col-xl-12">
-                                {% if uploaded %}
-                                    <div class="alert alert-success alert-dismissible fade show animated--fade-in-up" role="alert">
-                                        Recording was successfully uploaded!
-                                        <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
-                                    </div>
-                                {% endif %}
-
-                                {% if error == "format" %}
-                                    <div class="alert alert-danger alert-dismissible fade show animated--fade-in-up" role="alert">
-                                        The file is not an audio file.
-                                        <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
-                                    </div>
-                                {% endif %}
-
-                                {% if error == "size" %}
-                                    <div class="alert alert-danger alert-dismissible fade show animated--fade-in-up" role="alert">
-                                        File is too large.
-                                        <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
-                                    </div>
-                                {% endif %}
-
-                                <!-- Profile picture card-->
-                                <div class="card mb-4 mb-xl-0">
-                                    <div class="card-header">New Recording</div>
-                                    <div class="card-body text-center">
-                                        <!-- Profile picture image-->
-                                        <img class="img-account-profile rounded-circle mb-2" src="/fapp/static/assets/img/demo/user-placeholder.svg" alt="" />
-                                        <!-- Profile picture help block-->
-                                        <div class="small font-italic text-muted mb-4">MP3 or WAV files no larger than X MB</div>
-                                        <!-- Profile picture upload button-->
-
-                                        <form method="POST" action="/upload" enctype="multipart/form-data">
-                                            <label for="files" class="btn btn-primary">Upload new recording
-                                                <input type="file" id ="files" name="file" style="display:none" onchange="this.form.submit()">
-                                            </label>
-                                        </form>
-
-
-                                    </div>
-                                </div>
+                    <div class="container-xl px-4 mt-n10">
+                        <div class="card">
+                            <div class="card-header">Aircall Integration</div>
+                            <div class="card-body">Useful information on how to integrate Aircall.
+                                <form method="POST" action="/integrations/aircall-install/">
+                                    <input type="submit" value="Install" class="btn btn-primary">
+                                </form>
                             </div>
-
                         </div>
                     </div>
                 </main>

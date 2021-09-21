@@ -15,6 +15,8 @@ from google.cloud import storage
 # import librosa
 import io
 from pydub import AudioSegment
+import requests
+
 import logging as lg
 
 
@@ -109,15 +111,33 @@ def logout():
 @login_required
 def aircall_redirect():
     aircall_code = request.args.get('code')
-    print(aircall_code)
+    oauth_client_id = 'bmjuz_rujZ2JFbN2gWhfExGHQ4fdGQs0FwIBuXCc1Os'
+    oauth_client_secret = 'tugSX9S25fuLX3AlfTVwgEtvd0SQWmJdRndyItMZvTQ'
+    redirect_uri = 'https://gonogo.ai/integrations/aircall-redirect/'
+    url = 'https://api.aircall.io/v1/oauth/token'
+    myobj = {"client_id": oauth_client_id,
+              "client_secret": oauth_client_secret,
+              "code": aircall_code,
+              "redirect_uri": redirect_uri,
+              "grant_type": "authorization_code"}
+
+    x = requests.post(url, data=myobj)
+    print(x)
     return redirect(url_for("main.dashboard"))
 
 
-@main_bp.route('/integrations/aircall-install/')
+@main_bp.route('/integrations/aircall-install/', methods=['GET', 'POST'])
 @login_required
 def aircall_install():
-    return redirect(url_for("main.dashboard"))
+    if request.method == 'POST':
+        oauth_client_id = 'bmjuz_rujZ2JFbN2gWhfExGHQ4fdGQs0FwIBuXCc1Os'
+        redirect_uri = 'https://gonogo.ai/integrations/aircall-redirect/'
+        print("frere")
+        return redirect("https://dashboard-v2.aircall.io/oauth/authorize?client_id={0}&redirect_uri={1}&response_type=code&scope=public_api".format(oauth_client_id, redirect_uri))
+    elif request.method == 'GET':
+        return render_template('integrations_aircall.html')
 
+    return render_template('integrations_aircall.html')
 
 @main_bp.route('/upload', methods=['POST'])
 def upload():
