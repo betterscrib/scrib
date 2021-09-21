@@ -82,4 +82,5 @@
         }
         targetAnchor.classList.add('active');
     });
+
 });

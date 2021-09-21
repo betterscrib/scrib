@@ -12,7 +12,7 @@ from .models import db, login_manager, User, Recording
 from werkzeug.security import generate_password_hash, check_password_hash
 from google.cloud import storage
 
-import librosa
+# import librosa
 import io
 from pydub import AudioSegment
 import logging as lg
