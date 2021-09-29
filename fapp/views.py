@@ -118,6 +118,7 @@ def logout():
 @login_required
 def aircall_redirect():
     aircall_code = request.args.get('code')
+    print(aircall_code)
     oauth_client_id = 'bmjuz_rujZ2JFbN2gWhfExGHQ4fdGQs0FwIBuXCc1Os'
     oauth_client_secret = 'tugSX9S25fuLX3AlfTVwgEtvd0SQWmJdRndyItMZvTQ'
     redirect_uri = 'https://gonogo.ai/integrations/aircall-redirect/'
