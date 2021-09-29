@@ -72,8 +72,7 @@ def dashboard():
 @login_required
 def calls():
 
-    max_id = db.session.query(func.max(Call.id)).scalar()
-    print(max_id)
+    max_id = db.session.query(func.max(Call.aircall_id)).scalar()
     token = Integration.query.filter_by(name="Aircall").one().token
     get_aircall_calls(token, max_id)
     all_calls = Call.query.all()

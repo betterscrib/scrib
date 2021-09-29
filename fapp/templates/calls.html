@@ -529,7 +529,8 @@
                                             <th>Duration</th>
                                             <th>From</th>
                                             <th>To</th>
-                                            <th>Contact Name</th>
+                                            <th>Contact First Name</th>
+                                            <th>Contact Last Name</th>
                                             <th>Contact Company</th>
                                             <th>Tags</th>
                                         </tr>
@@ -541,7 +542,8 @@
                                             <th>Duration</th>
                                             <th>From</th>
                                             <th>To</th>
-                                            <th>Contact Name</th>
+                                            <th>Contact First Name</th>
+                                            <th>Contact Last Name</th>
                                             <th>Contact Company</th>
                                             <th>Tags</th>
                                         </tr>
@@ -554,7 +556,8 @@
                                                 <td>{{ call.id }}</td>
                                                 <td>{{ call.number_digits }}</td>
                                                 <td>{{ call.contact_number_digits }}</td>
-                                                <td>{{ str(call.contact_first_name or '') + ' ' + str(call.contact_last_name or '') }}</td>
+                                                <td>{{ call.contact_first_name }}</td>
+                                                <td>{{call.contact_last_name }}</td>
                                                 <td>{{ call.contact_company }}</td>
                                                 <td>{{ call.tags }}</td>
                                             </tr>
