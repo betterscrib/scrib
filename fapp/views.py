@@ -5,44 +5,55 @@ from flask_login import login_user, login_required, logout_user, current_user
 from flask_wtf import Form
 from wtforms import StringField, PasswordField, BooleanField
 from wtforms.fields.html5 import EmailField
-from wtforms.validators import DataRequired, Email, Length, EqualTo 
+from wtforms.validators import DataRequired, Email, Length, EqualTo
 
-from .models import db, login_manager, User, Recording, Integration
+from .models import db, login_manager, User, Recording, Integration, Call
 
 from werkzeug.security import generate_password_hash, check_password_hash
 from google.cloud import storage
+from sqlalchemy import func
 
 # import librosa
 import io
 from pydub import AudioSegment
 import requests
+from datetime import datetime
 
 import logging as lg
 
 
 class LoginForm(Form):
-    email = EmailField('Email', validators=[DataRequired(), Email(message = 'Invalid Email'), Length(min=4, max=50)], render_kw={"placeholder": "Enter email address"})
-    password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=80)], render_kw={"placeholder": "Enter password"})
+    email = EmailField('Email', validators=[DataRequired(), Email(message='Invalid Email'), Length(min=4, max=50)],
+                       render_kw={"placeholder": "Enter email address"})
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=80)],
+                             render_kw={"placeholder": "Enter password"})
     remember = BooleanField('Remember password')
 
 
 class SignupForm(Form):
-    first_name = StringField('First Name', validators=[DataRequired(), Length(min=4, max=50)], render_kw={"placeholder": "Enter first name"})
-    last_name = StringField('Last Name', validators=[DataRequired(), Length(min=4, max=50)], render_kw={"placeholder": "Enter last name"})
- 
-    email = EmailField('Email', validators=[DataRequired(), Length(min=4, max=50)], render_kw={"placeholder": "Enter email address"})
-    password = PasswordField('Password', validators=[DataRequired(), EqualTo('confirm_password', message='Passwords must match'), Length(min=8, max=80)], render_kw={"placeholder": "Enter password"})
-    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), Length(min=8, max=80)], render_kw={"placeholder": "Confirm password"})
+    first_name = StringField('First Name', validators=[DataRequired(), Length(min=4, max=50)],
+                             render_kw={"placeholder": "Enter first name"})
+    last_name = StringField('Last Name', validators=[DataRequired(), Length(min=4, max=50)],
+                            render_kw={"placeholder": "Enter last name"})
+
+    email = EmailField('Email', validators=[DataRequired(), Length(min=4, max=50)],
+                       render_kw={"placeholder": "Enter email address"})
+    password = PasswordField('Password',
+                             validators=[DataRequired(), EqualTo('confirm_password', message='Passwords must match'),
+                                         Length(min=8, max=80)], render_kw={"placeholder": "Enter password"})
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), Length(min=8, max=80)],
+                                     render_kw={"placeholder": "Confirm password"})
 
 
-main_bp = Blueprint('main', __name__, template_folder='templates', static_folder='static', static_url_path='/fapp/static')
+main_bp = Blueprint('main', __name__, template_folder='templates', static_folder='static',
+                    static_url_path='/fapp/static')
 
 login_manager.login_view = 'main.login'
 
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id)) 
+    return User.query.get(int(user_id))
 
 
 @main_bp.route('/')
@@ -51,18 +62,25 @@ def index():
 
 
 @main_bp.route('/dashboard/')
-@login_required 
+@login_required
 def dashboard():
     recs = Recording.query.filter_by(user_id=current_user.id).all()
     return render_template('dashboard.html', user=current_user, recs=recs)
 
+
 @main_bp.route('/calls/')
 @login_required
 def calls():
-    url = 'https://api.aircall.io/v1/'
 
-    recs = Recording.query.filter_by(user_id=current_user.id).all()
-    return render_template('dashboard.html', user=current_user, recs=recs)
+    max_id = db.session.query(func.max(Call.id)).scalar()
+    token = Integration.query.filter_by(name="Aircall").one().token
+
+    get_aircall_calls(token, max_id)
+
+    all_calls = Call.query.all()
+
+    return render_template('dashboard.html', user=current_user, calls=all_calls)
+
 
 @main_bp.route('/addcall/')
 @login_required
@@ -70,6 +88,7 @@ def addcall():
     error = request.args.get('error')
     uploaded = request.args.get('uploaded')
     return render_template('addcall.html', user=current_user, error=error, uploaded=uploaded)
+
 
 # @main_bp.route('/recordings/')
 # @login_required
@@ -92,13 +111,13 @@ def login():
 
 
 @main_bp.route('/signup/', methods=['GET', 'POST'])
-def signup():  
+def signup():
     form = SignupForm()
     if form.validate_on_submit():
         hashed_password = generate_password_hash(form.password.data, method='sha256')
-        new_user = User(first_name=form.first_name.data, 
-                        last_name=form.last_name.data, 
-                        email=form.email.data, 
+        new_user = User(first_name=form.first_name.data,
+                        last_name=form.last_name.data,
+                        email=form.email.data,
                         password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
@@ -108,7 +127,7 @@ def signup():
 
 
 @main_bp.route('/logout/')
-@login_required 
+@login_required
 def logout():
     logout_user()
     return redirect(url_for('main.login'))
@@ -118,17 +137,16 @@ def logout():
 @login_required
 def aircall_redirect():
     aircall_code = request.args.get('code')
-    print(aircall_code)
+
     oauth_client_id = 'bmjuz_rujZ2JFbN2gWhfExGHQ4fdGQs0FwIBuXCc1Os'
     oauth_client_secret = 'tugSX9S25fuLX3AlfTVwgEtvd0SQWmJdRndyItMZvTQ'
     redirect_uri = 'https://gonogo.ai/integrations/aircall-redirect/'
     url = 'https://api.aircall.io/v1/oauth/token'
     body = {"client_id": oauth_client_id,
-              "client_secret": oauth_client_secret,
-              "code": aircall_code,
-              "redirect_uri": redirect_uri,
-              "grant_type": "authorization_code"}
-
+            "client_secret": oauth_client_secret,
+            "code": aircall_code,
+            "redirect_uri": redirect_uri,
+            "grant_type": "authorization_code"}
 
     x = requests.post(url, data=body)
 
@@ -145,14 +163,24 @@ def aircall_redirect():
 @main_bp.route('/integrations/aircall-install/', methods=['GET', 'POST'])
 @login_required
 def aircall_install():
+    # to do flow for when inte already installed, but here is a draft lol
+
+    existing_intes = Integration.query.all()
+    for x in existing_intes:
+        if x.name == 'Aircall':
+            return 'Aircall is already installed!'
+
     if request.method == 'POST':
         oauth_client_id = 'bmjuz_rujZ2JFbN2gWhfExGHQ4fdGQs0FwIBuXCc1Os'
         redirect_uri = 'https://gonogo.ai/integrations/aircall-redirect/'
-        return redirect("https://dashboard-v2.aircall.io/oauth/authorize?client_id={0}&redirect_uri={1}&response_type=code&scope=public_api".format(oauth_client_id, redirect_uri))
+        return redirect(
+            "https://dashboard-v2.aircall.io/oauth/authorize?client_id={0}&redirect_uri={1}&response_type=code&scope=public_api".format(
+                oauth_client_id, redirect_uri))
     elif request.method == 'GET':
         return render_template('integrations_aircall.html')
 
     return render_template('integrations_aircall.html')
+
 
 @main_bp.route('/upload', methods=['POST'])
 def upload():
@@ -199,3 +227,68 @@ def upload():
     return redirect(url_for('main.addcall', uploaded=True))
 
 
+def get_aircall_calls(token, max_id):
+    def get_calls():
+        url = "https://api.aircall.io/v1/calls?order=desc"
+        first_page = session.get(url, headers={'Authorization': 'Bearer {0}'.format(token)}).json()
+        yield first_page
+        num_pages = first_page['meta']['total'] // first_page['meta']['per_page'] + 1
+        if num_pages > 1:
+            for page in range(2, num_pages + 1):
+                next_page = session.get(url, params={'page': page}).json()
+                yield next_page
+
+    session = requests.Session()
+    for page in get_calls():
+
+        all_calls = page['calls']
+
+        max_id = 0 if not max_id else max_id
+
+        for x in all_calls:
+            if x['id'] <= max_id:
+                return 'done'
+
+            if x['answered_at']:
+                aircall_id = x['id']
+                direction = x['direction']
+                answered_at = x['answered_at']
+                ended_at = x['ended_at']
+                duration = x['duration']
+
+                user_name = x['user']['name'] if x['user'] else None
+
+                number_name = x['number']['name'] if x['number'] else None
+                number_digits = x['number']['digits'] if x['number'] else None
+                number_country = x['number']['country'] if x['number'] else None
+
+                contact_number_digits = x['raw_digits']
+
+                contact_first_name = x['contact']['first_name'] if x['contact'] else None
+                contact_last_name = x['contact']['last_name'] if x['contact'] else None
+                contact_company = x['contact']['company_name'] if x['contact'] else None
+
+                tags = '|'.join([y['name'] for y in x['tags']]) if x['tags'] else None
+                comments = '|'.join([y['content'] for y in x['comments']]) if x['comments'] else None
+
+                new_call = Call(aircall_id=aircall_id,
+                                direction=direction,
+                                answered_at=datetime.fromtimestamp(answered_at),
+                                ended_at=datetime.fromtimestamp(ended_at),
+                                duration=duration,
+                                user_name=user_name,
+                                number_name=number_name,
+                                number_digits=number_digits,
+                                number_country=number_country,
+                                contact_number_digits=contact_number_digits,
+                                contact_first_name=contact_first_name,
+                                contact_last_name=contact_last_name,
+                                contact_company=contact_company,
+                                tags=tags,
+                                comments=comments)
+
+                db.session.add(new_call)
+
+        db.session.commit()
+
+        return 'done'
