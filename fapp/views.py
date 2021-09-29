@@ -132,7 +132,7 @@ def aircall_redirect():
 
     x = requests.post(url, data=body)
 
-    token = x.access_token
+    token = x.json()['access_token']
 
     new_integration = Integration(name="Aircall",
                                   token=token)
