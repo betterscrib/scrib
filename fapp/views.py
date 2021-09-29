@@ -244,7 +244,7 @@ def get_aircall_calls(token, max_id):
         max_id = 0 if not max_id else max_id
 
         for x in all_calls:
-            if x['id'] <= max_id:
+            if int(x['id']) <= int(max_id):
                 return 'done'
 
             if x['answered_at']:
