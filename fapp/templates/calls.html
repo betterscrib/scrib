@@ -554,7 +554,7 @@
                                                 <td>{{ call.id }}</td>
                                                 <td>{{ call.number_digits }}</td>
                                                 <td>{{ call.contact_number_digits }}</td>
-                                                <td>{{ call.contact_first_name + ' ' + call.contact_last_name}}</td>
+                                                <td>{{ str(call.contact_first_name or '') + ' ' + str(call.contact_last_name or '') }}</td>
                                                 <td>{{ call.contact_company }}</td>
                                                 <td>{{ call.tags }}</td>
                                             </tr>
