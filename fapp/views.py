@@ -74,12 +74,10 @@ def calls():
 
     max_id = db.session.query(func.max(Call.id)).scalar()
     token = Integration.query.filter_by(name="Aircall").one().token
-
     get_aircall_calls(token, max_id)
-
     all_calls = Call.query.all()
 
-    return render_template('dashboard.html', user=current_user, calls=all_calls)
+    return render_template('calls.html', user=current_user, calls=all_calls)
 
 
 @main_bp.route('/addcall/')
