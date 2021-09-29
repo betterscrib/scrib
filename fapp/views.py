@@ -7,7 +7,7 @@ from wtforms import StringField, PasswordField, BooleanField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Email, Length, EqualTo 
 
-from .models import db, login_manager, User, Recording
+from .models import db, login_manager, User, Recording, Integration
 
 from werkzeug.security import generate_password_hash, check_password_hash
 from google.cloud import storage
@@ -56,6 +56,13 @@ def dashboard():
     recs = Recording.query.filter_by(user_id=current_user.id).all()
     return render_template('dashboard.html', user=current_user, recs=recs)
 
+@main_bp.route('/calls/')
+@login_required
+def calls():
+    url = 'https://api.aircall.io/v1/'
+
+    recs = Recording.query.filter_by(user_id=current_user.id).all()
+    return render_template('dashboard.html', user=current_user, recs=recs)
 
 @main_bp.route('/addcall/')
 @login_required
@@ -115,17 +122,22 @@ def aircall_redirect():
     oauth_client_secret = 'tugSX9S25fuLX3AlfTVwgEtvd0SQWmJdRndyItMZvTQ'
     redirect_uri = 'https://gonogo.ai/integrations/aircall-redirect/'
     url = 'https://api.aircall.io/v1/oauth/token'
-    myobj = {"client_id": oauth_client_id,
+    body = {"client_id": oauth_client_id,
               "client_secret": oauth_client_secret,
               "code": aircall_code,
               "redirect_uri": redirect_uri,
               "grant_type": "authorization_code"}
 
 
-    x = requests.post(url, data=myobj)
+    x = requests.post(url, data=body)
 
-    token = x.content
-    print(token)
+    token = x.access_token
+
+    new_integration = Integration(name="Aircall",
+                                  token=token)
+    db.session.add(new_integration)
+    db.session.commit()
+
     return redirect(url_for("main.aircall_install"))
 
 
@@ -135,7 +147,6 @@ def aircall_install():
     if request.method == 'POST':
         oauth_client_id = 'bmjuz_rujZ2JFbN2gWhfExGHQ4fdGQs0FwIBuXCc1Os'
         redirect_uri = 'https://gonogo.ai/integrations/aircall-redirect/'
-        print("frere")
         return redirect("https://dashboard-v2.aircall.io/oauth/authorize?client_id={0}&redirect_uri={1}&response_type=code&scope=public_api".format(oauth_client_id, redirect_uri))
     elif request.method == 'GET':
         return render_template('integrations_aircall.html')

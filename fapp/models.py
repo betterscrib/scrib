@@ -23,3 +23,9 @@ class Recording(db.Model):
     file_format = db.Column(db.String(50))
     duration = db.Column(db.Float)
 
+class Integration(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(256))
+    token = db.Column(db.String(256))
+
+
