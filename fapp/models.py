@@ -30,7 +30,7 @@ class Integration(db.Model):
 
 class Call(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    aircall_id = db.Column(db.String(256))
+    aircall_id = db.Column(db.Integer)
     direction = db.Column(db.String(50))
     answered_at = db.Column(db.DateTime)
     ended_at = db.Column(db.DateTime)
