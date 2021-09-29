@@ -247,7 +247,7 @@ def get_aircall_calls(token, max_id):
             if int(x['id']) <= int(max_id):
                 return 'done'
 
-            if x['answered_at']:
+            if x['answered_at'] and x['ended_at']:
                 aircall_id = x['id']
                 direction = x['direction']
                 answered_at = x['answered_at']
