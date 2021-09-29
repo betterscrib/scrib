@@ -11,7 +11,7 @@ from .models import db, login_manager, User, Recording, Integration, Call
 
 from werkzeug.security import generate_password_hash, check_password_hash
 from google.cloud import storage
-from sqlalchemy import func
+from sqlalchemy import func, desc
 
 # import librosa
 import io
@@ -75,8 +75,8 @@ def calls():
     max_id = db.session.query(func.max(Call.aircall_id)).scalar()
     token = Integration.query.filter_by(name="Aircall").one().token
     get_aircall_calls(token, max_id)
-    all_calls = Call.query.all()
 
+    all_calls = Call.query.order_by(desc(Call.answered_at)).all()
     return render_template('calls.html', user=current_user, calls=all_calls)
 
 
