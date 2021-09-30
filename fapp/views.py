@@ -298,6 +298,6 @@ def get_aircall_calls(token, max_id):
     response = requests.post('https://us-central1-crucial-media-325221.cloudfunctions.net/test',
                              headers=headers, data=data)
     print(response)
-
+    print("frere")
 
     return 'done'
