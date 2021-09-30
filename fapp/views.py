@@ -285,8 +285,19 @@ def get_aircall_calls(token, max_id):
                                 tags=tags,
                                 comments=comments)
 
+
+
                 db.session.add(new_call)
 
         db.session.commit()
+
+        headers = {'Content-Type': 'application/json', }
+
+        data = '{"name":"Keyboard Cat"}'
+
+        response = requests.post('https://us-central1-crucial-media-325221.cloudfunctions.net/test',
+                                 headers=headers, data=data)
+        print(response)
+
 
         return 'done'
