@@ -297,10 +297,9 @@ def get_aircall_calls(token, max_id):
 
                 db.session.add(new_call)
 
-                if recording_url and call_id:
+                if recording_url:
                     db.session.flush()
                     call_id = new_call.id
-
                     message = '{{"call_id":"{0}", "recording_url":"{1}"}}'.format(call_id, recording_url)
                     function_name = "upload_to_storage"
                     queue_name = "upload-to-storage"
