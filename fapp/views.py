@@ -79,7 +79,7 @@ def calls():
     all_calls = Call.query.order_by(desc(Call.answered_at)).all()
     return render_template('calls.html', user=current_user, calls=all_calls)
 
-@app.route('/call/<int:call_id>/')
+@main_bp.route('/call/<int:call_id>/')
 def call(call_id):
     return '%s' % call_id
 
