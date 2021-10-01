@@ -296,15 +296,12 @@ def get_aircall_calls(token, max_id):
                                 comments=comments)
 
                 db.session.add(new_call)
-                db.session.flush()
-                call_id = new_call.id
-                print("call id putain")
-                print(call_id)
 
                 if recording_url and call_id:
+                    db.session.flush()
+                    call_id = new_call.id
 
-
-                    message = '{"call_id":"{0}", "recording_url":"{1}"}'.format(call_id, recording_url)
+                    message = '{{"call_id":"{0}", "recording_url":"{1}"}}'.format(call_id, recording_url)
                     function_name = "upload_to_storage"
                     queue_name = "upload-to-storage"
                     create_task_for_google_function(function_name, queue_name, message)

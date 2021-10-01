@@ -29,7 +29,7 @@ class Integration(db.Model):
     token = db.Column(db.String(256))
 
 class Call(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=True)
+    id = db.Column(db.Integer, primary_key=True)
     aircall_id = db.Column(db.Integer)
     direction = db.Column(db.String(50))
     answered_at = db.Column(db.DateTime)
