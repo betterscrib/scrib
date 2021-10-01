@@ -71,14 +71,6 @@ def dashboard():
 @main_bp.route('/calls/')
 @login_required
 def calls():
-    headers = {'Content-Type': 'application/json', }
-
-    data = '{"name":"Keyboard Cat"}'
-
-    response = requests.post('https://us-central1-crucial-media-325221.cloudfunctions.net/test',
-                             headers=headers, data=data)
-    print(response)
-    print("frere")
 
     max_id = db.session.query(func.max(Call.aircall_id)).scalar()
     token = Integration.query.filter_by(name="Aircall").one().token
@@ -87,6 +79,9 @@ def calls():
     all_calls = Call.query.order_by(desc(Call.answered_at)).all()
     return render_template('calls.html', user=current_user, calls=all_calls)
 
+@app.route('/call/<int:call_id>/')
+def call(call_id):
+    return '%s' % call_id
 
 @main_bp.route('/addcall/')
 @login_required

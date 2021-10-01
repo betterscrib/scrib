@@ -551,7 +551,7 @@
                                     <tbody>
                                         {% for call in calls %}
                                             <tr>
-                                                <td>{{ call.direction }}</td>
+                                                <td><a href="{{url_for('main.call/'+call.id)}}>{{ call.direction }}<\a></td>
                                                 <td>{{ call.answered_at }}</td>
                                                 <td>{{ call.duration }}</td>
                                                 <td>{{ call.number_digits }}</td>
