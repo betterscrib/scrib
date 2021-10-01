@@ -10,7 +10,7 @@ from wtforms.validators import DataRequired, Email, Length, EqualTo
 from .models import db, login_manager, User, Recording, Integration, Call
 
 from werkzeug.security import generate_password_hash, check_password_hash
-from google.cloud import storage
+from google.cloud import storage, tasks_v2
 from sqlalchemy import func, desc
 
 # import librosa
@@ -277,6 +277,8 @@ def get_aircall_calls(token, max_id):
                 tags = '|'.join([y['name'] for y in x['tags']]) if x['tags'] else None
                 comments = '|'.join([y['content'] for y in x['comments']]) if x['comments'] else None
 
+                recording_url = x['recording']
+
                 new_call = Call(aircall_id=aircall_id,
                                 direction=direction,
                                 answered_at=datetime.fromtimestamp(answered_at),
@@ -293,12 +295,53 @@ def get_aircall_calls(token, max_id):
                                 tags=tags,
                                 comments=comments)
 
-
-
                 db.session.add(new_call)
+
+                if recording_url:
+                    db.session.flush()
+                    call_id = new_call.id
+                    message = '{"call_id":"{0}", "recording_url":"{1}"}'.format(call_id, recording_url)
+                    function_name = "upload_to_storage"
+                    queue_name = "upload-to-storage"
+                    create_task_for_google_function(function_name, queue_name, message)
 
     db.session.commit()
 
-
-
     return 'done'
+
+def create_task_for_google_function(function_name, queue_name, message):
+    # Create a client.
+    client = tasks_v2.CloudTasksClient()
+
+    project = 'crucial-media-325221'
+    queue = queue_name
+    location = 'us-central1'
+    url = 'https://us-central1-crucial-media-325221.cloudfunctions.net/' + function_name
+    audience = 'https://us-central1-crucial-media-325221.cloudfunctions.net/' + function_name
+    service_account_email = 'betterscrib@crucial-media-325221.iam.gserviceaccount.com'
+    payload = message
+
+    # Construct the fully qualified queue name.
+    parent = client.queue_path(project, location, queue)
+
+    # Construct the request body.
+    task = {
+        "http_request": {  # Specify the type of request.
+            "http_method": tasks_v2.HttpMethod.POST,
+            "url": url,  # The full url path that the task will be sent to.
+            "oidc_token": {"service_account_email": service_account_email, "audience": audience},
+            "headers": {"Content-Type": "application/json"},
+        }
+    }
+
+    if payload is not None:
+        # The API expects a payload of type bytes.
+        converted_payload = payload.encode()
+
+        # Add the payload to the request.
+        task["http_request"]["body"] = converted_payload
+
+    # Use the client to build and send the task.
+    response = client.create_task(request={"parent": parent, "task": task})
+
+    print("Created task {}".format(response.name))
