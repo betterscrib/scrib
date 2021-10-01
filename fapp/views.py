@@ -301,8 +301,8 @@ def get_aircall_calls(token, max_id):
                     db.session.flush()
                     call_id = new_call.id
                     message = '{{"call_id":"{0}", "recording_url":"{1}"}}'.format(call_id, recording_url)
-                    function_name = "test"
-                    queue_name = "testqueue"
+                    function_name = "upload_to_storage"
+                    queue_name = "upload-to-storage"
                     create_task_for_google_function(function_name, queue_name, message)
 
     db.session.commit()
@@ -314,10 +314,10 @@ def create_task_for_google_function(function_name, queue_name, message):
     client = tasks_v2.CloudTasksClient()
 
     project = 'crucial-media-325221'
-    queue = 'testqueue'
+    queue = queue_name
     location = 'us-central1'
-    url = 'https://us-central1-crucial-media-325221.cloudfunctions.net/test'
-    audience = 'https://us-central1-crucial-media-325221.cloudfunctions.net/test'
+    url = 'https://us-central1-crucial-media-325221.cloudfunctions.net/' + function_name
+    audience = 'https://us-central1-crucial-media-325221.cloudfunctions.net/' + function_name
     service_account_email = 'betterscrib@crucial-media-325221.iam.gserviceaccount.com'
     payload = message
 
