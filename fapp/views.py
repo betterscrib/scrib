@@ -314,10 +314,10 @@ def create_task_for_google_function(function_name, queue_name, message):
     client = tasks_v2.CloudTasksClient()
 
     project = 'crucial-media-325221'
-    queue = queue_name
+    queue = 'testqueue'
     location = 'us-central1'
-    url = 'https://us-central1-crucial-media-325221.cloudfunctions.net/' + function_name
-    audience = 'https://us-central1-crucial-media-325221.cloudfunctions.net/' + function_name
+    url = 'https://us-central1-crucial-media-325221.cloudfunctions.net/test'
+    audience = 'https://us-central1-crucial-media-325221.cloudfunctions.net/test'
     service_account_email = 'betterscrib@crucial-media-325221.iam.gserviceaccount.com'
     payload = message
 
