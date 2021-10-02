@@ -87,7 +87,7 @@ def call(call_id):
         blob = bucket.get_blob('{0}.wav_transcript.txt'.format(str(call_id)))
         transcript = blob.download_as_string()
         return transcript
-    finally:
+    except:
         return 'Transcript not yet generated or not found'
 
 
