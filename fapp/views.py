@@ -251,6 +251,10 @@ def get_aircall_calls(token, max_id):
                 return 'done'
 
             if x['answered_at'] and x['ended_at']:
+                print("max_id")
+                print(max_id)
+                print("aircall id")
+                print(x['id'])
                 aircall_id = x['id']
                 direction = x['direction']
                 answered_at = x['answered_at']
@@ -293,6 +297,7 @@ def get_aircall_calls(token, max_id):
                 db.session.add(new_call)
 
                 if recording_url:
+                    print("ouais on est dedans ouais")
                     db.session.flush()
                     call_id = new_call.id
                     message = '{{"call_id":"{0}", "recording_url":"{1}"}}'.format(call_id, recording_url)
