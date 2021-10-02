@@ -289,6 +289,7 @@ def get_aircall_calls(token, max_id):
                                 tags=tags,
                                 comments=comments)
 
+
                 db.session.add(new_call)
                 db.session.flush()
 
