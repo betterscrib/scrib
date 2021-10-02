@@ -241,71 +241,71 @@ def get_aircall_calls(token, max_id):
 
     session = requests.Session()
     for page in get_calls():
+        if page['calls']:
+            all_calls = page['calls']
 
-        all_calls = page['calls']
+            max_id = 0 if not max_id else max_id
 
-        max_id = 0 if not max_id else max_id
+            for x in all_calls:
+                if int(x['id']) <= int(max_id):
+                    db.session.commit()
+                    return 'done'
 
-        for x in all_calls:
-            if int(x['id']) <= int(max_id):
-                db.session.commit()
-                return 'done'
+                if x['answered_at'] and x['ended_at']:
+                    print("max_id")
+                    print(max_id)
+                    print("aircall id")
+                    print(x['id'])
+                    aircall_id = x['id']
+                    direction = x['direction']
+                    answered_at = x['answered_at']
+                    ended_at = x['ended_at']
+                    duration = x['duration']
 
-            if x['answered_at'] and x['ended_at']:
-                print("max_id")
-                print(max_id)
-                print("aircall id")
-                print(x['id'])
-                aircall_id = x['id']
-                direction = x['direction']
-                answered_at = x['answered_at']
-                ended_at = x['ended_at']
-                duration = x['duration']
+                    user_name = x['user']['name'] if x['user'] else None
 
-                user_name = x['user']['name'] if x['user'] else None
+                    number_name = x['number']['name'] if x['number'] else None
+                    number_digits = x['number']['digits'] if x['number'] else None
+                    number_country = x['number']['country'] if x['number'] else None
 
-                number_name = x['number']['name'] if x['number'] else None
-                number_digits = x['number']['digits'] if x['number'] else None
-                number_country = x['number']['country'] if x['number'] else None
+                    contact_number_digits = x['raw_digits']
 
-                contact_number_digits = x['raw_digits']
+                    contact_first_name = x['contact']['first_name'] if x['contact'] else None
+                    contact_last_name = x['contact']['last_name'] if x['contact'] else None
+                    contact_company = x['contact']['company_name'] if x['contact'] else None
 
-                contact_first_name = x['contact']['first_name'] if x['contact'] else None
-                contact_last_name = x['contact']['last_name'] if x['contact'] else None
-                contact_company = x['contact']['company_name'] if x['contact'] else None
+                    tags = '|'.join([y['name'] for y in x['tags']]) if x['tags'] else None
+                    comments = '|'.join([y['content'] for y in x['comments']]) if x['comments'] else None
 
-                tags = '|'.join([y['name'] for y in x['tags']]) if x['tags'] else None
-                comments = '|'.join([y['content'] for y in x['comments']]) if x['comments'] else None
+                    recording_url = x['recording']
 
-                recording_url = x['recording']
+                    new_call = Call(aircall_id=aircall_id,
+                                    direction=direction,
+                                    answered_at=datetime.fromtimestamp(answered_at),
+                                    ended_at=datetime.fromtimestamp(ended_at),
+                                    duration=duration,
+                                    user_name=user_name,
+                                    number_name=number_name,
+                                    number_digits=number_digits,
+                                    number_country=number_country,
+                                    contact_number_digits=contact_number_digits,
+                                    contact_first_name=contact_first_name,
+                                    contact_last_name=contact_last_name,
+                                    contact_company=contact_company,
+                                    tags=tags,
+                                    comments=comments)
 
-                new_call = Call(aircall_id=aircall_id,
-                                direction=direction,
-                                answered_at=datetime.fromtimestamp(answered_at),
-                                ended_at=datetime.fromtimestamp(ended_at),
-                                duration=duration,
-                                user_name=user_name,
-                                number_name=number_name,
-                                number_digits=number_digits,
-                                number_country=number_country,
-                                contact_number_digits=contact_number_digits,
-                                contact_first_name=contact_first_name,
-                                contact_last_name=contact_last_name,
-                                contact_company=contact_company,
-                                tags=tags,
-                                comments=comments)
+                    db.session.add(new_call)
+                    db.session.flush()
 
-                db.session.add(new_call)
-                db.session.flush()
+                    if recording_url:
+                        print("ouais on est dedans ouais")
 
-                if recording_url:
-                    print("ouais on est dedans ouais")
-
-                    call_id = new_call.id
-                    message = '{{"call_id":"{0}", "recording_url":"{1}"}}'.format(call_id, recording_url)
-                    function_name = "upload_to_storage"
-                    queue_name = "upload-to-storage"
-                    create_task_for_google_function(function_name, queue_name, message)
+                        call_id = new_call.id
+                        message = '{{"call_id":"{0}", "recording_url":"{1}"}}'.format(call_id, recording_url)
+                        function_name = "upload_to_storage"
+                        queue_name = "upload-to-storage"
+                        create_task_for_google_function(function_name, queue_name, message)
 
     db.session.commit()
     return 'done'
