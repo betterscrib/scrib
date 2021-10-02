@@ -71,7 +71,6 @@ def dashboard():
 @main_bp.route('/calls/')
 @login_required
 def calls():
-
     max_id = db.session.query(func.max(Call.aircall_id)).scalar()
     token = Integration.query.filter_by(name="Aircall").one().token
     get_aircall_calls(token, max_id)
@@ -79,9 +78,18 @@ def calls():
     all_calls = Call.query.order_by(desc(Call.answered_at)).all()
     return render_template('calls.html', user=current_user, calls=all_calls)
 
+
 @main_bp.route('/call/<int:call_id>/')
 def call(call_id):
-    return '%s' % call_id
+    try:
+        client = storage.Client()
+        bucket = client.get_bucket('gonogo_transcripts')
+        blob = bucket.get_blob('{0}.wav_transcript.txt'.format(str(call_id)))
+        transcript = blob.download_as_string()
+        return transcript
+    finally:
+        return '%s' % call_id
+
 
 @main_bp.route('/addcall/')
 @login_required
@@ -236,7 +244,8 @@ def get_aircall_calls(token, max_id):
         num_pages = first_page['meta']['total'] // first_page['meta']['per_page'] + 1
         if num_pages > 1:
             for p in range(2, num_pages + 1):
-                next_page = session.get(url, params={'page': p}, headers={'Authorization': 'Bearer {0}'.format(token)}).json()
+                next_page = session.get(url, params={'page': p},
+                                        headers={'Authorization': 'Bearer {0}'.format(token)}).json()
                 yield next_page
 
     session = requests.Session()
@@ -289,7 +298,6 @@ def get_aircall_calls(token, max_id):
                                 tags=tags,
                                 comments=comments)
 
-
                 db.session.add(new_call)
                 db.session.flush()
 
@@ -301,6 +309,7 @@ def get_aircall_calls(token, max_id):
 
     db.session.commit()
     return 'done'
+
 
 def create_task_for_google_function(function_name, queue_name, message):
     # Create a client.
