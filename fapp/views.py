@@ -235,7 +235,7 @@ def get_aircall_calls(token, max_id):
         yield first_page
         num_pages = first_page['meta']['total'] // first_page['meta']['per_page'] + 1
         if num_pages > 1:
-            for p in range(1, num_pages):
+            for p in range(2, num_pages + 1):
                 next_page = session.get(url, params={'page': p}, headers={'Authorization': 'Bearer {0}'.format(token)}).json()
                 yield next_page
 
