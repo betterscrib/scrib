@@ -81,14 +81,14 @@ def calls():
 
 @main_bp.route('/call/<int:call_id>/')
 def call(call_id):
-    try:
-        client = storage.Client()
-        bucket = client.get_bucket('gonogo_transcripts')
-        blob = bucket.get_blob('{0}.wav_transcript.txt'.format(str(call_id)))
-        transcript = blob.download_as_string()
-        return transcript
-    finally:
-        return '%s' % call_id
+    # try:
+    client = storage.Client()
+    bucket = client.get_bucket('gonogo_transcripts')
+    blob = bucket.get_blob('{0}.wav_transcript.txt'.format(str(call_id)))
+    transcript = blob.download_as_string()
+    return transcript
+    # finally:
+    #     return '%s' % call_id
 
 
 @main_bp.route('/addcall/')
