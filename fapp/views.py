@@ -248,6 +248,7 @@ def get_aircall_calls(token, max_id):
 
         for x in all_calls:
             if int(x['id']) <= int(max_id):
+                db.session.commit()
                 return 'done'
 
             if x['answered_at'] and x['ended_at']:
@@ -307,7 +308,6 @@ def get_aircall_calls(token, max_id):
                     create_task_for_google_function(function_name, queue_name, message)
 
     db.session.commit()
-
     return 'done'
 
 def create_task_for_google_function(function_name, queue_name, message):
