@@ -241,7 +241,6 @@ def get_aircall_calls(token, max_id):
 
     session = requests.Session()
     for page in get_calls():
-        # all_calls = page['calls'] if 'calls' in page else []
         all_calls = page['calls']
         max_id = 0 if not max_id else max_id
 
@@ -250,11 +249,7 @@ def get_aircall_calls(token, max_id):
                 db.session.commit()
                 return 'done'
 
-            if x['answered_at'] and x['ended_at']:
-                print("max_id")
-                print(max_id)
-                print("aircall id")
-                print(x['id'])
+            if x['answered_at'] and x['ended_at'] and x['recording']:
                 aircall_id = x['id']
                 direction = x['direction']
                 answered_at = x['answered_at']
@@ -297,14 +292,11 @@ def get_aircall_calls(token, max_id):
                 db.session.add(new_call)
                 db.session.flush()
 
-                if recording_url:
-                    print("ouais on est dedans ouais")
-
-                    call_id = new_call.id
-                    message = '{{"call_id":"{0}", "recording_url":"{1}"}}'.format(call_id, recording_url)
-                    function_name = "upload_to_storage"
-                    queue_name = "upload-to-storage"
-                    create_task_for_google_function(function_name, queue_name, message)
+                call_id = new_call.id
+                message = '{{"call_id":"{0}", "recording_url":"{1}"}}'.format(call_id, recording_url)
+                function_name = "upload_to_storage"
+                queue_name = "upload-to-storage"
+                create_task_for_google_function(function_name, queue_name, message)
 
     db.session.commit()
     return 'done'
