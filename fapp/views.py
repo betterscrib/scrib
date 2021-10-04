@@ -17,7 +17,8 @@ from sqlalchemy import func, desc
 import io
 from pydub import AudioSegment
 import requests
-from datetime import datetime
+import datetime
+
 
 import logging as lg
 
@@ -82,8 +83,11 @@ def calls():
 @main_bp.route('/call/<int:call_id>/')
 def call(call_id):
     try:
-        transcript_url = 'gs://gonogo_transcripts/{0}.wav_transcript.fr.vtt'.format(str(call_id))
-        call_url = 'gs://scribtranscripts/{0}.wav'.format(str(call_id))
+        transcript_url = generate_download_signed_url_v4('gonogo_transcripts', '{0}.wav_transcript.fr.vtt'.format(str(call_id)))
+        call_url = generate_download_signed_url_v4('scribtranscripts', '{0}.wav'.format(str(call_id)))
+
+        # transcript_url = 'gs://gonogo_transcripts/{0}.wav_transcript.fr.vtt'.format(str(call_id))
+        # call_url = 'gs://scribtranscripts/{0}.wav'.format(str(call_id))
         return render_template('call_test.html', user=current_user, transcript_url=transcript_url, call_url=call_url)
     except:
         return 'Transcript not yet generated or not found'
@@ -287,8 +291,8 @@ def get_aircall_calls(token, max_id):
 
                 new_call = Call(aircall_id=aircall_id,
                                 direction=direction,
-                                answered_at=datetime.fromtimestamp(answered_at),
-                                ended_at=datetime.fromtimestamp(ended_at),
+                                answered_at=datetime.datetime.fromtimestamp(answered_at),
+                                ended_at=datetime.datetime.fromtimestamp(ended_at),
                                 duration=duration,
                                 user_name=user_name,
                                 number_name=number_name,
@@ -350,3 +354,33 @@ def create_task_for_google_function(function_name, queue_name, message):
     response = client.create_task(request={"parent": parent, "task": task})
 
     print("Created task {}".format(response.name))
+
+
+
+def generate_download_signed_url_v4(bucket_name, blob_name):
+    """Generates a v4 signed URL for downloading a blob.
+
+    Note that this method requires a service account key file. You can not use
+    this if you are using Application Default Credentials from Google Compute
+    Engine or from the Google Cloud SDK.
+    """
+    # bucket_name = 'your-bucket-name'
+    # blob_name = 'your-object-name'
+
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+
+    url = blob.generate_signed_url(
+        version="v4",
+        # This URL is valid for 15 minutes
+        expiration=datetime.timedelta(minutes=15),
+        # Allow GET requests using this URL.
+        method="GET",
+    )
+
+    print("Generated GET signed URL:")
+    print(url)
+    print("You can use this URL with any user agent, for example:")
+    print("curl '{}'".format(url))
+    return url
