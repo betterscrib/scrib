@@ -526,10 +526,6 @@
                         <div class="card mb-4">
                             <div class="card-header">Calls</div>
                             <div class="card-body video-container">
-                                <audio controls>
-                                  <source src="http://www.openbeelden.nl/files/92/104101.ed_hd.mp4" type="audio/wav">
-                                  Your browser does not support the audio tag.
-                                </audio>
                                 <video id="video"
                                            class="video-js vjs-default-skin"
                                            height="300"
@@ -540,7 +536,7 @@
                                       <p>
                                         Your browser doesn't support video. Please <a href="http://browsehappy.com/">upgrade your browser</a> to see the example.
                                       </p>
-                                      <source src="http://www.openbeelden.nl/files/92/104101.ed_hd.mp4" type="audio/wav">
+                                      <source src="{{ call_url }}" type="audio/wav">
                                       <track kind="captions" src="{{ transcript_url }}" srclang="fr" label="French" default>
 {#                                      <source src="http://www.openbeelden.nl/files/92/104105.ed_hd.webm" type="video/webm">#}
 {#                                      <track kind="captions" src="captions/captions.en.vtt" srclang="en" label="English" default>#}
