@@ -96,15 +96,10 @@ def addcall():
     uploaded = request.args.get('uploaded')
     return render_template('addcall.html', user=current_user, error=error, uploaded=uploaded)
 
-@main_bp.route('/calltest/')
-# @login_required
-def calltest():
-    return render_template('call_test.html')
-
-@main_bp.route('/calltest2/')
-# @login_required
-def calltest2():
-    return render_template('call_test2.html')
+# @main_bp.route('/calltest/')
+# # @login_required
+# def calltest():
+#     return render_template('call_test.html')
 
 # @main_bp.route('/recordings/')
 # @login_required
