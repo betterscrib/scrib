@@ -82,11 +82,9 @@ def calls():
 @main_bp.route('/call/<int:call_id>/')
 def call(call_id):
     try:
-        client = storage.Client()
-        bucket = client.get_bucket('gonogo_transcripts')
-        blob = bucket.get_blob('{0}.wav_transcript.txt'.format(str(call_id)))
-        transcript = blob.download_as_string()
-        return transcript
+        transcript_url = 'gs://gonogo_transcripts/{0}.wav_transcript.fr.vtt'.format(str(call_id))
+        call_url = 'gs://scribtranscripts/{0}.wavt'.format(str(call_id))
+        return render_template('call_test.html', user=current_user, transcript_url=transcript_url, call_url=call_url)
     except:
         return 'Transcript not yet generated or not found'
 
@@ -98,6 +96,15 @@ def addcall():
     uploaded = request.args.get('uploaded')
     return render_template('addcall.html', user=current_user, error=error, uploaded=uploaded)
 
+@main_bp.route('/calltest/')
+# @login_required
+def calltest():
+    return render_template('call_test.html')
+
+@main_bp.route('/calltest2/')
+# @login_required
+def calltest2():
+    return render_template('call_test2.html')
 
 # @main_bp.route('/recordings/')
 # @login_required
