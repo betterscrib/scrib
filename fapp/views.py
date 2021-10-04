@@ -83,7 +83,7 @@ def calls():
 def call(call_id):
     try:
         transcript_url = 'gs://gonogo_transcripts/{0}.wav_transcript.fr.vtt'.format(str(call_id))
-        call_url = 'gs://scribtranscripts/{0}.wavt'.format(str(call_id))
+        call_url = 'gs://scribtranscripts/{0}.wav'.format(str(call_id))
         return render_template('call_test.html', user=current_user, transcript_url=transcript_url, call_url=call_url)
     except:
         return 'Transcript not yet generated or not found'
