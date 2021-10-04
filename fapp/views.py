@@ -82,6 +82,9 @@ def calls():
 
 @main_bp.route('/call/<int:call_id>/')
 def call(call_id):
+    transcript_url = generate_download_signed_url_v4('gonogo_transcripts',
+                                                     '{0}.wav_transcript.fr.vtt'.format(str(call_id)))
+    call_url = generate_download_signed_url_v4('scribtranscripts', '{0}.wav'.format(str(call_id)))
     try:
         transcript_url = generate_download_signed_url_v4('gonogo_transcripts', '{0}.wav_transcript.fr.vtt'.format(str(call_id)))
         call_url = generate_download_signed_url_v4('scribtranscripts', '{0}.wav'.format(str(call_id)))
