@@ -526,7 +526,10 @@
                         <div class="card mb-4">
                             <div class="card-header">Calls</div>
                             <div class="card-body video-container">
-
+                                <audio controls>
+                                  <source src="{{ call_url }}" type="audio/wav">
+                                  Your browser does not support the audio tag.
+                                </audio>
                                 <video id="video"
                                            class="video-js vjs-default-skin"
                                            height="300"
