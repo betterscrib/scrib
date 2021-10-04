@@ -89,6 +89,7 @@ def call(call_id):
         return 'Transcript not yet generated or not found'
 
 
+
 @main_bp.route('/addcall/')
 @login_required
 def addcall():
