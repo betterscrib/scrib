@@ -72,9 +72,7 @@ def dashboard():
 @main_bp.route('/calls/')
 @login_required
 def calls():
-    print(os.getcwd())
-    print(os.path.dirname(os.path.abspath(__file__)))
-    print(os.path.abspath(os.getcwd()))
+
     max_id = db.session.query(func.max(Call.aircall_id)).scalar()
     token = Integration.query.filter_by(name="Aircall").one().token
     get_aircall_calls(token, max_id)
@@ -85,14 +83,13 @@ def calls():
 
 @main_bp.route('/call/<int:call_id>/')
 def call(call_id):
-    transcript_url = generate_download_signed_url_v4('gonogo_transcripts',
-                                                     '{0}.wav_transcript.fr.vtt'.format(str(call_id)))
-    call_url = generate_download_signed_url_v4('scribtranscripts', '{0}.wav'.format(str(call_id)))
+    # transcript_url = generate_download_signed_url_v4('gonogo_transcripts','{0}.wav_transcript.fr.vtt'.format(str(call_id)))
+    # call_url = generate_download_signed_url_v4('scribtranscripts', '{0}.wav'.format(str(call_id)))
     try:
-        transcript_url = generate_download_signed_url_v4('gonogo_transcripts', '{0}.wav_transcript.fr.vtt'.format(str(call_id)))
+        # transcript_url = generate_download_signed_url_v4('gonogo_transcripts', '{0}.wav_transcript.fr.vtt'.format(str(call_id)))
         call_url = generate_download_signed_url_v4('scribtranscripts', '{0}.wav'.format(str(call_id)))
 
-        # transcript_url = 'gs://gonogo_transcripts/{0}.wav_transcript.fr.vtt'.format(str(call_id))
+        transcript_url = 'gs://gonogo_transcripts/{0}.wav_transcript.fr.vtt'.format(str(call_id))
         # call_url = 'gs://scribtranscripts/{0}.wav'.format(str(call_id))
         return render_template('call_test.html', user=current_user, transcript_url=transcript_url, call_url=call_url)
     except:
