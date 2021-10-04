@@ -19,7 +19,7 @@ from pydub import AudioSegment
 import requests
 import datetime
 
-
+import os
 import logging as lg
 
 
@@ -72,6 +72,7 @@ def dashboard():
 @main_bp.route('/calls/')
 @login_required
 def calls():
+    print(os.getcwd())
     max_id = db.session.query(func.max(Call.aircall_id)).scalar()
     token = Integration.query.filter_by(name="Aircall").one().token
     get_aircall_calls(token, max_id)
