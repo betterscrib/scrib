@@ -73,6 +73,8 @@ def dashboard():
 @login_required
 def calls():
     print(os.getcwd())
+    print(os.path.dirname(os.path.abspath(__file__)))
+    print(os.path.abspath(os.getcwd()))
     max_id = db.session.query(func.max(Call.aircall_id)).scalar()
     token = Integration.query.filter_by(name="Aircall").one().token
     get_aircall_calls(token, max_id)
